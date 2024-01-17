@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-if [ -n "$OPENAI_API_KEY" ]; then
+if [ -z "$OPENAI_API_KEY" ]; then
     echo "Error: OpenAI API key not set - Check README"
     exit 1
 fi
