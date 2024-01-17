@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-if [ ! -v "$OPENAI_API_KEY" ]; then
+if [ -n "$OPENAI_API_KEY" ]; then
     echo "Error: OpenAI API key not set - Check README"
     exit 1
 fi
@@ -47,4 +47,4 @@ json_string=$(printf '{
 output_json="$(curl https://api.openai.com/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer $OPENAI_API_KEY"   -d  "$json_string")"
 
 output_erb=$(echo "$output_json" | jq '.choices.[].message.content' -r)
-echo "$output_erb" > "$file_name.erb"
+echo "$output_erb" > "${file_name%.*}.erb"
