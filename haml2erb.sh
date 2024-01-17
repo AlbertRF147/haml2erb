@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <file_name>"
+    exit 1
+fi
+
+if [ ! -f "$OPENAI_API_KEY" ]; then
+    echo "Error: OpenAI API key not set - Check README"
+    exit 1
+fi
+# Assign the first argument (file path) to a variable
+file_name=$1
+
+# Check if the file exists
+if [ ! -f "$file_name" ]; then
+    echo "Error: File not found - $file_name"
+    exit 1
+fi
+#
+# Check if curl is available
+if command -v curl &> /dev/null; then
+    echo "curl is installed."
+    # Add your curl commands or other logic here
+else
+    echo "Error: curl is not installed. Please install curl to proceed."
+    exit 1
+fi
+
+file_contents=$(jq -R -s -c < "$file_name")
+
+json_string=$(printf '{
+    "model": "gpt-3.5-turbo-1106",
+    "messages": [
+        {
+            "role": "user",
+            "content": "Given HAML code, print a valid ERB file. Output only plain text. Do not output markdown. HAML code:"
+        },
+        {
+            "role": "user",
+            "content": %s
+        }
+    ]
+}' "$file_contents")
+
+output_json="$(curl https://api.openai.com/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer $OPENAI_API_KEY"   -d  "$json_string")"
+
+output_erb=$(echo "$output_json" | jq '.choices.[].message.content' -r)
+echo "$output_erb" > "$file_name.erb"

@@ -1,0 +1,24 @@
+.grid.grid-cols-12.auto-cols-auto{"x-data": "{}"}
+
+  .slider-nav.hidden-xs.col-span-2{"x-data": "{}"}
+    %template{"x-for": "image in Object.values($store.pdp.colorSizes[$store.pdp.bulkSelectedColorId].images)"}
+      .image
+        %img{"x-bind:src": "image", style: "width: 100px;", class: "object-cover h-52 w-auto md:border md:border-solid md:border-gray-200 rounded-xl"}
+
+  .slider.col-span-12{"x-data": "{}", class: "md:mx-4 md:col-span-10 overflow-hidden"}
+    - if (discount_percentage = @product_presenter.discount_percentage(true))
+      .percentage-tag
+        = discount_percentage.html_safe
+    %template{"x-for": "image in Object.values($store.pdp.colorSizes[$store.pdp.bulkSelectedColorId].images)"}
+      .image
+        %img{"x-bind:src": "image", class: "object-cover max-w-full w-full md:border md:border-solid md:border-gray-200 rounded-xl"}
+
+:css
+  .slick-list, .slick-track {
+    height: 100%;
+  }
+
+  .slick-slide > img {
+    min-height: 100%;
+    margin: 0 auto;
+  }
